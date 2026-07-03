@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude — AI Assistant by Anthropic</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #1a1613;
+    --accent: #d97757;
+    --accent-light: #e8a087;
+    --text: #f5f0eb;
+    --text-dim: #b8aea5;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* 3D Canvas background */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
+
+  /* Navbar */
+  nav {
+    position: fixed;
+    top: 0; width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 6%;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    background: rgba(26, 22, 19, 0.6);
+    border-bottom: 1px solid rgba(217, 119, 87, 0.15);
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+  }
+
+  nav a:hover { color: var(--accent); }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 5%;
+  }
+
+  .hero .tag {
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    max-width: 900px;
+    background: linear-gradient(135deg, var(--text) 40%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 1s 0.4s forwards;
+  }
+
+  .hero p {
+    margin-top: 1.5rem;
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .cta-group {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
+
+  .btn {
+    padding: 0.9rem 2.2rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 8px 30px rgba(217, 119, 87, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(217, 119, 87, 0.5);
+  }
+
+  .btn-outline {
+    border: 1px solid rgba(245, 240, 235, 0.25);
+    color: var(--text);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  /* Features */
+  .features {
+    position: relative;
+    z-index: 10;
+    padding: 6rem 6%;
+  }
+
+  .features h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .features h2 span { color: var(--accent); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.8rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(245, 240, 235, 0.04);
+    border: 1px solid rgba(217, 119, 87, 0.15);
+    border-radius: 20px;
+    padding: 2.2rem;
+    backdrop-filter: blur(8px);
+    transition: transform 0.4s, border-color 0.4s;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+  }
+
+  .card .icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.7rem;
+    color: var(--accent-light);
+  }
+
+  .card p {
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(217, 119, 87, 0.12);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <div class="logo">✳ Claude</div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#">API</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">Docs</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="tag">AI Assistant by Anthropic</div>
+  <h1>Meet Claude.<br>Thoughtful AI for real work.</h1>
+  <p>Claude helps you write, analyze, code, and create — built with safety at its core and a genuinely helpful personality.</p>
+  <div class="cta-group">
+    <a href="#" class="btn btn-primary">Try Claude</a>
+    <a href="#features" class="btn btn-outline">Learn More</a>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <h2>Why <span>Claude</span>?</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="icon">🧠</div>
+      <h3>Deep Reasoning</h3>
+      <p>Tackle complex analysis, math, and multi-step problems with state-of-the-art reasoning capabilities.</p>
+    </div>
+    <div class="card">
+      <div class="icon">💻</div>
+      <h3>Expert Coding</h3>
+      <p>Write, debug, and refactor code across dozens of languages — from quick scripts to full applications.</p>
+    </div>
+    <div class="card">
+      <div class="icon">✍️</div>
+      <h3>Natural Writing</h3>
+      <p>Draft essays, emails, and creative work in a voice that feels genuinely human and adapts to your style.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🛡️</div>
+      <h3>Safety First</h3>
+      <p>Built by Anthropic with Constitutional AI — designed to be helpful, honest, and harmless.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Demo landing page — Claude is a product of Anthropic. Built with Three.js ✨
+</footer>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const canvas = document.getElementById('bg-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x1a1613, 0.035);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 0, 9);
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+const keyLight = new THREE.PointLight(0xd97757, 60);
+keyLight.position.set(5, 4, 6);
+scene.add(keyLight);
+const fillLight = new THREE.PointLight(0x7788ff, 25);
+fillLight.position.set(-6, -3, 4);
+scene.add(fillLight);
+
+// Central torus knot ("neural core")
+const knot = new THREE.Mesh(
+  new THREE.TorusKnotGeometry(2, 0.55, 220, 32),
+  new THREE.MeshStandardMaterial({
+    color: 0xd97757,
+    metalness: 0.75,
+    roughness: 0.25,
+    wireframe: false
+  })
+);
+scene.add(knot);
+
+// Wireframe overlay
+const wire = new THREE.Mesh(
+  new THREE.TorusKnotGeometry(2.05, 0.57, 110, 16),
+  new THREE.MeshBasicMaterial({ color: 0xe8a087, wireframe: true, transparent: true, opacity: 0.12 })
+);
+scene.add(wire);
+
+// Particle field
+const particleCount = 1500;
+const positions = new Float32Array(particleCount * 3);
+for (let i = 0; i < particleCount * 3; i++) {
+  positions[i] = (Math.random() - 0.5) * 40;
+}
+const particleGeo = new THREE.BufferGeometry();
+particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({
+  color: 0xd97757, size: 0.05, transparent: true, opacity: 0.7
+}));
+scene.add(particles);
+
+// Floating rings
+const rings = [];
+for (let i = 0; i < 3; i++) {
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(3.5 + i * 1.2, 0.02, 12, 100),
+    new THREE.MeshBasicMaterial({ color: 0xd97757, transparent: true, opacity: 0.25 - i * 0.06 })
+  );
+  ring.rotation.x = Math.random() * Math.PI;
+  ring.rotation.y = Math.random() * Math.PI;
+  scene.add(ring);
+  rings.push(ring);
+}
+
+// Mouse parallax
+let mouseX = 0, mouseY = 0;
+window.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+// Scroll effect
+let scrollY = 0;
+window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+// Animate
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  knot.rotation.x = t * 0.2;
+  knot.rotation.y = t * 0.3;
+  wire.rotation.x = t * 0.2;
+  wire.rotation.y = t * 0.3;
+
+  particles.rotation.y = t * 0.03;
+
+  rings.forEach((ring, i) => {
+    ring.rotation.z = t * 0.1 * (i + 1);
+    ring.rotation.x += 0.0005 * (i + 1);
+  });
+
+  // Smooth camera parallax + scroll zoom
+  camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
+  camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.05;
+  camera.position.z = 9 + scrollY * 0.005;
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
