@@ -3,12 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MiniMax — Advanced AI models with multimodal reasoning capabilities. Experience the future of artificial intelligence with MiniMax-4.2.">
+<meta name="keywords" content="AI, artificial intelligence, MiniMax, machine learning, multimodal AI, large language model">
+<meta name="author" content="MiniMax">
+<meta property="og:title" content="MiniMax — Intelligence, Reimagined">
+<meta property="og:description" content="Advanced AI models with multimodal reasoning capabilities.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <title>MiniMax — Intelligence, Reimagined</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap');
+  /* Fonts loaded via link tag above - no duplicate @import needed */
 
   :root {
     --bg: #05050f;
@@ -44,51 +51,57 @@
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
-    cursor: none;
     line-height: 1.6;
   }
 
+  /* Custom cursor enabled only for users who don't prefer reduced motion */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 769px) {
+    body { cursor: none; }
+  }
+  
   @media (max-width: 768px) {
     body { cursor: auto; }
   }
 
-  /* Premium Custom Cursor */
-  .cursor-dot, .cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 99999;
-    border-radius: 50%;
-    mix-blend-mode: screen;
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1), background 0.2s ease;
+  /* Premium Custom Cursor - respects reduced motion preference */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 769px) {
+    .cursor-dot, .cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 99999;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1), background 0.2s ease;
+    }
+    
+    .cursor-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-2);
+      box-shadow: 0 0 12px var(--accent-2);
+    }
+    
+    .cursor-ring {
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--accent);
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), width 0.35s, height 0.35s, border-color 0.3s;
+      box-shadow: 0 0 20px rgba(255, 77, 122, 0.15);
+    }
+    
+    .cursor-ring.hover {
+      width: 58px;
+      height: 58px;
+      border-color: var(--accent-3);
+      border-width: 1.75px;
+      box-shadow: 0 0 35px rgba(92, 225, 255, 0.25);
+    }
   }
   
-  .cursor-dot {
-    width: 7px;
-    height: 7px;
-    background: var(--accent-2);
-    box-shadow: 0 0 12px var(--accent-2);
-  }
-  
-  .cursor-ring {
-    width: 36px;
-    height: 36px;
-    border: 1.5px solid var(--accent);
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), width 0.35s, height 0.35s, border-color 0.3s;
-    box-shadow: 0 0 20px rgba(255, 77, 122, 0.15);
-  }
-  
-  .cursor-ring.hover {
-    width: 58px;
-    height: 58px;
-    border-color: var(--accent-3);
-    border-width: 1.75px;
-    box-shadow: 0 0 35px rgba(92, 225, 255, 0.25);
-  }
-
-  @media (max-width: 768px) {
+  @media (max-width: 768px), (prefers-reduced-motion: reduce) {
     .cursor-dot, .cursor-ring { display: none; }
   }
 
@@ -340,6 +353,10 @@
     color: var(--text) !important;
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
     box-shadow: 0 4px 15px rgba(255, 77, 122, 0.1);
+    min-height: 44px; /* WCAG touch target size */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .btn-nav:hover {
@@ -348,11 +365,90 @@
     transform: translateY(-1px);
     box-shadow: 0 6px 22px rgba(255, 77, 122, 0.2);
   }
+  
+  /* Improve touch targets for mobile - WCAG compliance */
+  @media (max-width: 768px) {
+    nav a {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+    }
+    
+    .btn-nav {
+      min-height: 48px;
+      padding: 0.75rem 1.5rem;
+    }
+  }
+
+  /* Mobile Navigation */
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+  }
+  
+  .menu-toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
 
   @media (max-width: 768px) {
-    nav ul li:not(:last-child) { display: none; }
-    nav { padding: 1.15rem 5%; }
-    .logo { font-size: 1.35rem; }
+    .menu-toggle {
+      display: flex;
+    }
+    
+    nav ul {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 280px;
+      height: 100vh;
+      background: rgba(5, 5, 15, 0.98);
+      backdrop-filter: blur(24px);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      transition: right 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    nav ul.active {
+      right: 0;
+    }
+    
+    nav a {
+      font-size: 1.1rem !important;
+    }
+    
+    nav { 
+      padding: 1.15rem 5%; 
+    }
+    
+    .logo { 
+      font-size: 1.35rem; 
+    }
   }
 
   /* Hero Section */
@@ -457,12 +553,26 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.65rem;
     transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     overflow: hidden;
     font-family: 'Inter', system-ui, sans-serif;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    min-height: 48px; /* WCAG touch target */
+  }
+  
+  /* Focus styles for accessibility */
+  .btn:focus-visible, a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent-3);
+    outline-offset: 3px;
+  }
+  
+  nav a:focus-visible {
+    outline: 2px solid var(--accent-3);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
   
   .btn-primary {
@@ -1236,12 +1346,17 @@
   <canvas id="bg-canvas"></canvas>
 
   <!-- Navigation -->
-  <nav id="nav">
+  <nav id="nav" role="navigation" aria-label="Main navigation">
     <a href="#" class="logo">
-      <div class="logo-mark">M</div>
+      <div class="logo-mark" aria-hidden="true">M</div>
       <span>MiniMax</span>
     </a>
-    <ul>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainMenu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul id="mainMenu">
       <li><a href="#features">Features</a></li>
       <li><a href="#how">How it works</a></li>
       <li><a href="#showcase">Models</a></li>
@@ -1615,36 +1730,74 @@
     }
     window.addEventListener('scroll', updateProgressBar);
 
-    // Custom Cursor
+    // Custom Cursor - only initialize if elements exist and user doesn't prefer reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const cursorDot = document.getElementById('cursorDot');
     const cursorRing = document.getElementById('cursorRing');
-    let cx = 0, cy = 0, rx = 0, ry = 0;
     
-    window.addEventListener('mousemove', e => {
-      cx = e.clientX; cy = e.clientY;
-      cursorDot.style.left = cx + 'px';
-      cursorDot.style.top = cy + 'px';
-    });
-    
-    function animateCursor() {
-      rx += (cx - rx) * 0.15;
-      ry += (cy - ry) * 0.15;
-      cursorRing.style.left = rx + 'px';
-      cursorRing.style.top = ry + 'px';
-      requestAnimationFrame(animateCursor);
+    if (!prefersReducedMotion && cursorDot && cursorRing) {
+      let cx = 0, cy = 0, rx = 0, ry = 0;
+      
+      window.addEventListener('mousemove', e => {
+        cx = e.clientX; cy = e.clientY;
+        cursorDot.style.left = cx + 'px';
+        cursorDot.style.top = cy + 'px';
+      });
+      
+      function animateCursor() {
+        rx += (cx - rx) * 0.15;
+        ry += (cy - ry) * 0.15;
+        cursorRing.style.left = rx + 'px';
+        cursorRing.style.top = ry + 'px';
+        requestAnimationFrame(animateCursor);
+      }
+      animateCursor();
+      
+      document.querySelectorAll('a, button, .card, .model-card, .step, .testimonial').forEach(el => {
+        el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+        el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+      });
     }
-    animateCursor();
-    
-    document.querySelectorAll('a, button, .card, .model-card, .step, .testimonial').forEach(el => {
-      el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
-      el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
-    });
 
     // Nav scroll effect
     const nav = document.getElementById('nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 70);
     });
+    
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mainMenu = document.getElementById('mainMenu');
+    
+    if (menuToggle && mainMenu) {
+      menuToggle.addEventListener('click', () => {
+        const isActive = menuToggle.classList.toggle('active');
+        mainMenu.classList.toggle('active');
+        menuToggle.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        document.body.style.overflow = isActive ? 'hidden' : '';
+      });
+      
+      // Close menu when clicking on a link
+      mainMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menuToggle.classList.remove('active');
+          mainMenu.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        });
+      });
+      
+      // Close menu on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mainMenu.classList.contains('active')) {
+          menuToggle.classList.remove('active');
+          mainMenu.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+          menuToggle.focus();
+        }
+      });
+    }
 
     // Scroll reveal
     const revealEls = document.querySelectorAll('.reveal');
@@ -1936,12 +2089,56 @@
     }
     animate();
 
-    // Resize handler
+    // Resize handler with proper cleanup support
+    const geometries = [];
+    const materials = [];
+    
+    // Track all geometries and materials for cleanup
+    [core.geometry, halo.geometry, orb.geometry].forEach(g => g && geometries.push(g));
+    shapeGeometries.forEach(g => g && geometries.push(g));
+    geometries.push(pGeo);
+    rings.forEach(r => {
+      if (r.geometry) geometries.push(r.geometry);
+      if (r.material) materials.push(r.material);
+    });
+    
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+    
+    // Cleanup function to prevent memory leaks
+    function cleanupThreeScene() {
+      shapes.forEach(s => {
+        if (s.geometry) s.geometry.dispose();
+        if (s.material) {
+          if (Array.isArray(s.material)) s.material.forEach(m => m.dispose());
+          else s.material.dispose();
+        }
+      });
+      
+      core.geometry.dispose();
+      core.material.dispose();
+      halo.geometry.dispose();
+      halo.material.dispose();
+      orb.geometry.dispose();
+      orb.material.dispose();
+      
+      pGeo.dispose();
+      particles.material.dispose();
+      
+      geometries.forEach(g => g.dispose());
+      materials.forEach(m => m.dispose());
+      
+      renderer.dispose();
+      renderer.forceContextLoss();
+      renderer.domElement = null;
+      renderer = null;
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', cleanupThreeScene);
 
     // Demo Modal Functions
     function showDemoModal() {
