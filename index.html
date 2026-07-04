@@ -3,70 +3,359 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude — AI Assistant by Anthropic</title>
+<title>MiniMax — Intelligence, Reimagined</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap');
 
   :root {
-    --bg: #1a1613;
-    --accent: #d97757;
-    --accent-light: #e8a087;
-    --text: #f5f0eb;
-    --text-dim: #b8aea5;
+    --bg: #05050f;
+    --bg-2: #0a0a1a;
+    --bg-3: #12122a;
+    --accent: #ff4d7a;
+    --accent-2: #ff8fa3;
+    --accent-3: #5ce1ff;
+    --accent-4: #b388ff;
+    --accent-5: #ffd166;
+    --accent-6: #7df7c5;
+    --text: #f8f6ff;
+    --text-dim: #918fa8;
+    --text-sub: #6c6a87;
+    --border: rgba(255, 143, 163, 0.12);
+    --glass: rgba(18, 18, 42, 0.65);
+    --glass-2: rgba(18, 18, 42, 0.45);
+    --success: #5ce1a3;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
+    cursor: none;
+    line-height: 1.6;
   }
 
-  /* 3D Canvas background */
+  @media (max-width: 768px) {
+    body { cursor: auto; }
+  }
+
+  /* Premium Custom Cursor */
+  .cursor-dot, .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99999;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1), background 0.2s ease;
+  }
+  
+  .cursor-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent-2);
+    box-shadow: 0 0 12px var(--accent-2);
+  }
+  
+  .cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--accent);
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), width 0.35s, height 0.35s, border-color 0.3s;
+    box-shadow: 0 0 20px rgba(255, 77, 122, 0.15);
+  }
+  
+  .cursor-ring.hover {
+    width: 58px;
+    height: 58px;
+    border-color: var(--accent-3);
+    border-width: 1.75px;
+    box-shadow: 0 0 35px rgba(92, 225, 255, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    .cursor-dot, .cursor-ring { display: none; }
+  }
+
+  /* Elegant Loader */
+  .loader {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.9s ease;
+  }
+  
+  .loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .loader-ring {
+    width: 68px;
+    height: 68px;
+    border: 2.5px solid rgba(255, 143, 163, 0.1);
+    border-top-color: var(--accent-2);
+    border-radius: 50%;
+    animation: spin 1.1s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+    box-shadow: 0 0 25px rgba(255, 143, 163, 0.15);
+  }
+  
+  .loader-text {
+    margin-top: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 4.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Enhanced Aurora Background */
+  .aurora {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .aurora::before, .aurora::after, .aurora .a3, .aurora .a4 {
+    content: '';
+    position: absolute;
+    width: 70vw;
+    height: 70vw;
+    border-radius: 50%;
+    filter: blur(130px);
+    opacity: 0.32;
+    animation: auroraFloat 22s ease-in-out infinite;
+  }
+  
+  .aurora::before {
+    background: radial-gradient(circle, var(--accent) 0%, transparent 65%);
+    top: -25%;
+    left: -15%;
+  }
+  
+  .aurora::after {
+    background: radial-gradient(circle, var(--accent-3) 5%, transparent 70%);
+    bottom: -25%;
+    right: -18%;
+    animation-delay: -11s;
+  }
+  
+  .aurora .a3 {
+    background: radial-gradient(circle, var(--accent-4) 0%, transparent 68%);
+    top: 25%;
+    right: 10%;
+    width: 48vw;
+    height: 48vw;
+    animation-delay: -6s;
+    opacity: 0.22;
+  }
+  
+  .aurora .a4 {
+    background: radial-gradient(circle, var(--accent-6) 0%, transparent 70%);
+    bottom: 15%;
+    left: 18%;
+    width: 42vw;
+    height: 42vw;
+    animation-delay: -16s;
+    opacity: 0.18;
+  }
+
+  @keyframes auroraFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(12%, 18%) scale(1.15); }
+    50% { transform: translate(-18%, 10%) scale(0.92); }
+    75% { transform: translate(8%, -12%) scale(1.08); }
+  }
+
+  /* Premium Grid Overlay */
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.28;
+    background-image: 
+      linear-gradient(rgba(255, 143, 163, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 143, 163, 0.035) 1px, transparent 1px);
+    background-size: 70px 70px;
+    mask-image: radial-gradient(ellipse at center, black 25%, transparent 82%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 82%);
+  }
+
+  /* Subtle Noise Texture */
+  .noise {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.015%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22200%22 height=%22200%22 filter=%22url(%23n)%22 opacity=%220.035%22/%3E%3C/svg%3E');
+    background-size: 180px 180px;
+    mix-blend-mode: overlay;
+    opacity: 0.55;
+  }
+
   #bg-canvas {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
   }
 
-  /* Navbar */
+  /* Elegant Navigation */
   nav {
     position: fixed;
-    top: 0; width: 100%;
+    top: 0;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.2rem 6%;
-    z-index: 100;
-    backdrop-filter: blur(12px);
-    background: rgba(26, 22, 19, 0.6);
-    border-bottom: 1px solid rgba(217, 119, 87, 0.15);
+    padding: 1.35rem 6%;
+    z-index: 1000;
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    background: rgba(5, 5, 15, 0.42);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
   }
-
+  
+  nav.scrolled {
+    padding: 0.85rem 6%;
+    background: rgba(5, 5, 15, 0.72);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+  
   .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: -0.5px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1.2px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+  
+  .logo-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-4));
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+    font-weight: 800;
+    box-shadow: 0 6px 25px rgba(255, 77, 122, 0.45);
+    position: relative;
+  }
+  
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-4));
+    border-radius: 14px;
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(8px);
+  }
+  
+  .logo:hover .logo-mark {
+    transform: rotate(8deg) scale(1.05);
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   nav ul {
     display: flex;
-    gap: 2.5rem;
+    gap: 2.35rem;
     list-style: none;
+    align-items: center;
   }
-
+  
   nav a {
     color: var(--text-dim);
     text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.3s;
+    font-size: 0.935rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+  }
+  
+  nav a:not(.btn-nav)::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: linear-gradient(to right, var(--accent-2), var(--accent-3));
+    transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  nav a:not(.btn-nav):hover {
+    color: var(--text);
+  }
+  
+  nav a:not(.btn-nav):hover::after {
+    width: 100%;
+  }
+  
+  .btn-nav {
+    padding: 0.6rem 1.45rem;
+    border-radius: 60px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: rgba(255, 77, 122, 0.1);
+    border: 1px solid var(--border);
+    color: var(--text) !important;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 4px 15px rgba(255, 77, 122, 0.1);
+  }
+  
+  .btn-nav:hover {
+    background: rgba(255, 77, 122, 0.2);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(255, 77, 122, 0.2);
   }
 
-  nav a:hover { color: var(--accent); }
+  @media (max-width: 768px) {
+    nav ul li:not(:last-child) { display: none; }
+    nav { padding: 1.15rem 5%; }
+    .logo { font-size: 1.35rem; }
+  }
 
-  /* Hero */
+  /* Hero Section */
   .hero {
     position: relative;
     z-index: 10;
@@ -77,319 +366,1701 @@
     align-items: center;
     text-align: center;
     padding: 0 5%;
+    padding-top: 5rem;
   }
-
-  .hero .tag {
-    color: var(--accent);
-    font-size: 0.85rem;
-    letter-spacing: 3px;
+  
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 60px;
+    background: rgba(255, 77, 122, 0.08);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+    color: var(--accent-2);
+    font-size: 0.78rem;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    margin-bottom: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.75rem;
     opacity: 0;
-    animation: fadeUp 1s 0.2s forwards;
+    animation: fadeUp 1s 0.15s forwards;
+    box-shadow: 0 4px 15px rgba(255, 77, 122, 0.1);
+  }
+  
+  .badge-dot {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 12px var(--accent-2), 0 0 22px var(--accent-2);
+    animation: pulse 2.2s infinite ease-in-out;
+  }
+  
+  @keyframes pulse {
+    50% { opacity: 0.45; transform: scale(0.85); }
   }
 
   .hero h1 {
-    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(3.1rem, 8.2vw, 7.1rem);
     font-weight: 800;
-    line-height: 1.1;
-    max-width: 900px;
-    background: linear-gradient(135deg, var(--text) 40%, var(--accent) 100%);
+    line-height: 1.02;
+    letter-spacing: -3.5px;
+    max-width: 1100px;
+    opacity: 0;
+    animation: fadeUp 1.1s 0.35s forwards;
+  }
+  
+  .hero h1 .gradient {
+    background: linear-gradient(135deg, var(--accent-2) 5%, var(--accent-4) 30%, var(--accent-3) 62%, var(--accent-5) 88%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    opacity: 0;
-    animation: fadeUp 1s 0.4s forwards;
+    background-size: 250% 250%;
+    animation: gradientShift 9s ease infinite;
+    display: inline-block;
   }
-
+  
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
   .hero p {
-    margin-top: 1.5rem;
-    font-size: 1.15rem;
+    margin-top: 1.95rem;
+    font-size: 1.25rem;
     color: var(--text-dim);
-    max-width: 560px;
-    line-height: 1.7;
+    max-width: 640px;
+    line-height: 1.65;
+    font-weight: 400;
     opacity: 0;
-    animation: fadeUp 1s 0.6s forwards;
+    animation: fadeUp 1.1s 0.55s forwards;
   }
 
   .cta-group {
-    margin-top: 2.5rem;
+    margin-top: 3rem;
     display: flex;
-    gap: 1rem;
+    gap: 1.05rem;
+    flex-wrap: wrap;
+    justify-content: center;
     opacity: 0;
-    animation: fadeUp 1s 0.8s forwards;
+    animation: fadeUp 1.1s 0.75s forwards;
   }
-
+  
   .btn {
-    padding: 0.9rem 2.2rem;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
+    padding: 1.05rem 2.45rem;
+    border-radius: 60px;
+    font-size: 0.98rem;
+    font-weight: 700;
     text-decoration: none;
-    transition: transform 0.3s, box-shadow 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   }
-
+  
   .btn-primary {
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), #e03a5c);
     color: #fff;
-    box-shadow: 0 8px 30px rgba(217, 119, 87, 0.35);
+    box-shadow: 0 10px 35px rgba(255, 77, 122, 0.45);
+    border: none;
   }
-
+  
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.28), transparent);
+    transform: translateX(-120%);
+    transition: transform 0.75s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .btn-primary:hover::before {
+    transform: translateX(150%);
+  }
+  
   .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(217, 119, 87, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 48px rgba(255, 77, 122, 0.55);
   }
-
+  
   .btn-outline {
-    border: 1px solid rgba(245, 240, 235, 0.25);
+    border: 1.5px solid rgba(248, 246, 255, 0.15);
     color: var(--text);
+    background: rgba(255, 255, 255, 0.025);
+    backdrop-filter: blur(14px);
   }
-
+  
   .btn-outline:hover {
     border-color: var(--accent);
-    color: var(--accent);
+    color: var(--accent-2);
     transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  
+  .btn-arrow {
+    transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    font-size: 1.05rem;
+  }
+  
+  .btn:hover .btn-arrow {
+    transform: translateX(5px);
   }
 
-  /* Features */
-  .features {
-    position: relative;
-    z-index: 10;
-    padding: 6rem 6%;
+  .hero-meta {
+    margin-top: 4.5rem;
+    display: flex;
+    gap: 3.25rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1.1s 1.05s forwards;
   }
-
-  .features h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3.5rem;
-  }
-
-  .features h2 span { color: var(--accent); }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.8rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .card {
-    background: rgba(245, 240, 235, 0.04);
-    border: 1px solid rgba(217, 119, 87, 0.15);
-    border-radius: 20px;
-    padding: 2.2rem;
-    backdrop-filter: blur(8px);
-    transition: transform 0.4s, border-color 0.4s;
-  }
-
-  .card:hover {
-    transform: translateY(-8px);
-    border-color: var(--accent);
-  }
-
-  .card .icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 0.7rem;
-    color: var(--accent-light);
-  }
-
-  .card p {
+  
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
     color: var(--text-dim);
-    line-height: 1.7;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+  }
+  
+  .meta-item strong {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text);
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -1px;
   }
 
-  /* Footer */
-  footer {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding: 3rem;
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
     color: var(--text-dim);
-    font-size: 0.9rem;
-    border-top: 1px solid rgba(217, 119, 87, 0.12);
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1.1s 1.25s forwards;
+  }
+  
+  .scroll-line {
+    width: 1.5px;
+    height: 52px;
+    background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+    animation: scrollLine 2.6s ease-in-out infinite;
+  }
+
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.45); }
+    50% { opacity: 1; transform: scaleY(1); }
   }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section Styles */
+  section {
+    position: relative;
+    z-index: 10;
+    padding: 7rem 6%;
+  }
+  
+  .section-header {
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto 3.5rem;
+  }
+  
+  .section-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.35rem, 5.5vw, 3.85rem);
+    font-weight: 800;
+    letter-spacing: -1.75px;
+    line-height: 1.05;
+    margin-bottom: 1.1rem;
+  }
+  
+  .section-header p {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* Features Section */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 1.5rem;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  
+  .card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 2.15rem 2.1rem;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(22px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255, 77, 122, 0.08) 0%, transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  
+  .card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 143, 163, 0.22);
+  }
+  
+  .card:hover::before {
+    opacity: 1;
+  }
+  
+  .card-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.65rem;
+    font-size: 1.75rem;
+    background: linear-gradient(135deg, rgba(255, 77, 122, 0.1), rgba(183, 136, 255, 0.1));
+    border: 1px solid rgba(255, 143, 163, 0.2);
+  }
+  
+  .card h3 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 0.85rem;
+    letter-spacing: -.4px;
+  }
+  
+  .card p {
+    color: var(--text-dim);
+    font-size: 1.02rem;
+    line-height: 1.7;
+  }
+  
+  .card:hover .card-icon {
+    transform: scale(1.08) rotate(4deg);
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  /* How It Works */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.85rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .step {
+    position: relative;
+    padding: 2.1rem 1.9rem 2.2rem;
+    background: var(--glass-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .step:hover {
+    transform: translateY(-8px);
+  }
+  
+  .step-number {
+    width: 37px;
+    height: 37px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-4));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 1.35rem;
+    box-shadow: 0 5px 20px rgba(255, 77, 122, 0.3);
+  }
+  
+  .step h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+  
+  .step p {
+    color: var(--text-dim);
+    font-size: 1.02rem;
+  }
+
+  /* Showcase / Models */
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 1.65rem;
+    max-width: 1250px;
+    margin: 0 auto;
+  }
+  
+  .model-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    overflow: hidden;
+    transition: all 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+  }
+  
+  .model-card:hover {
+    transform: translateY(-14px) scale(1.01);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+  }
+  
+  .model-header {
+    height: 165px;
+    background: linear-gradient(135deg, #1c1c34, #0e0e22);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .model-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 143, 163, 0.12) 10%, transparent 70%);
+  }
+  
+  .model-icon {
+    font-size: 3.4rem;
+    opacity: 0.95;
+    filter: drop-shadow(0 10px 25px rgba(255, 77, 122, 0.3));
+  }
+  
+  .model-body {
+    padding: 1.65rem 1.85rem;
+  }
+  
+  .model-body h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  
+  .model-body .model-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.75rem;
+    border-radius: 40px;
+    background: rgba(255, 143, 163, 0.1);
+    color: var(--accent-2);
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+  }
+  
+  .model-body p {
+    color: var(--text-dim);
+    font-size: 0.985rem;
+    line-height: 1.65;
+  }
+  
+  .model-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.35rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  
+  .model-stats span {
+    color: var(--text-dim);
+  }
+  
+  .model-stats strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* Stats Section */
+  .stats {
+    background: var(--bg-3);
+    border-radius: 28px;
+    padding: 3.5rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2.75rem;
+    text-align: center;
+  }
+  
+  .stat {
+    padding: 0.75rem;
+  }
+  
+  .stat-number {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.15rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--text), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.3rem;
+  }
+  
+  .stat-label {
+    font-size: 1rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  /* Testimonials */
+  .testimonials {
+    max-width: 1250px;
+    margin: 0 auto;
+  }
+  
+  .testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(315px, 1fr));
+    gap: 1.6rem;
+  }
+  
+  .testimonial {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 2.15rem 2.05rem;
+    position: relative;
+    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .testimonial:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+  }
+  
+  .testimonial::before {
+    content: '“';
+    font-size: 6.5rem;
+    font-family: 'Space Grotesk', serif;
+    position: absolute;
+    top: -1.1rem;
+    left: 1.75rem;
+    opacity: 0.1;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  
+  .testimonial p {
+    font-size: 1.07rem;
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 1.7rem;
+    font-weight: 400;
+  }
+  
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 0.95rem;
+  }
+  
+  .author-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-4));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 77, 122, 0.35);
+  }
+  
+  .author-info h5 {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  
+  .author-info span {
+    font-size: 0.875rem;
+    color: var(--text-dim);
+  }
+
+  /* Final CTA */
+  .cta-section {
+    background: linear-gradient(145deg, #0c0c22, #12122f);
+    border-radius: 28px;
+    padding: 5.2rem 4rem;
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 20%, rgba(255, 143, 163, 0.09) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  
+  .cta-section h2 {
+    font-size: clamp(2.15rem, 4.8vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -1.6px;
+    margin-bottom: 1.15rem;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .cta-section p {
+    max-width: 490px;
+    margin: 0 auto 2.25rem;
+    color: var(--text-dim);
+    font-size: 1.15rem;
+  }
+
+  /* Footer */
+  footer {
+    padding: 3.75rem 6% 3rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    position: relative;
+    z-index: 10;
+  }
+  
+  .footer-content {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2.75rem;
+  }
+  
+  .footer-brand {
+    max-width: 250px;
+  }
+  
+  .footer-brand .logo {
+    margin-bottom: 1.1rem;
+    font-size: 1.35rem;
+  }
+  
+  .footer-brand p {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5rem;
+  }
+  
+  .footer-col h5 {
+    font-size: 0.95rem;
+    margin-bottom: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  
+  .footer-col a {
+    display: block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+    transition: color 0.25s ease;
+  }
+  
+  .footer-col a:hover {
+    color: var(--accent-2);
+  }
+  
+  .footer-bottom {
+    max-width: 1300px;
+    margin: 3.5rem auto 0;
+    padding-top: 2.1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-sub);
+  }
+
+  /* Scroll Progress Bar */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--accent), var(--accent-3));
+    z-index: 100000;
+    transition: width 0.1s ease;
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  /* Modal Styles */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 15, 0.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    padding: 1.5rem;
+  }
+  
+  .modal.active {
+    display: flex;
+  }
+  
+  .modal-content {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 560px;
+    padding: 2.4rem 2.5rem;
+    position: relative;
+  }
+  
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.65rem;
+    font-weight: 700;
+  }
+  
+  .modal-close {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  
+  .modal-close:hover {
+    background: rgba(255,255,255,0.12);
+  }
+
+  .demo-chat {
+    background: var(--bg-2);
+    border-radius: 16px;
+    padding: 1.4rem;
+    height: 260px;
+    overflow-y: auto;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+  }
+  
+  .chat-message {
+    display: flex;
+    gap: 0.7rem;
+    margin-bottom: 1.15rem;
+  }
+  
+  .chat-bubble {
+    padding: 0.8rem 1.15rem;
+    border-radius: 18px;
+    max-width: 78%;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  .chat-bubble.bot {
+    background: rgba(255, 143, 163, 0.12);
+    border-radius: 18px 18px 18px 4px;
+    align-self: flex-start;
+  }
+  
+  .chat-bubble.user {
+    background: var(--accent);
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+
+  .demo-input {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .demo-input input {
+    flex: 1;
+    padding: 0.9rem 1.3rem;
+    border-radius: 60px;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+  }
+  
+  .demo-input button {
+    padding: 0.9rem 1.75rem;
+    border-radius: 60px;
+    background: linear-gradient(135deg, var(--accent), #e03a5c);
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 0.92rem;
+  }
+
+  /* Responsive Enhancements */
+  @media (max-width: 768px) {
+    section {
+      padding: 5rem 1.25rem;
+    }
+    
+    .hero h1 {
+      font-size: clamp(2.65rem, 9vw, 4.2rem);
+    }
+    
+    .features-grid, .showcase-grid, .testimonial-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+      gap: 2.1rem;
+    }
+    
+    .cta-section {
+      padding: 3.75rem 1.75rem;
+    }
+  }
+
+  /* Extra beauty touches */
+  .reveal {
+    opacity: 0;
+    transform: translateY(35px);
+    transition: all 0.75s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
   }
 </style>
 </head>
 <body>
-
-<canvas id="bg-canvas"></canvas>
-
-<nav>
-  <div class="logo">✳ Claude</div>
-  <ul>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#">API</a></li>
-    <li><a href="#">Pricing</a></li>
-    <li><a href="#">Docs</a></li>
-  </ul>
-</nav>
-
-<section class="hero">
-  <div class="tag">AI Assistant by Anthropic</div>
-  <h1>Meet Claude.<br>Thoughtful AI for real work.</h1>
-  <p>Claude helps you write, analyze, code, and create — built with safety at its core and a genuinely helpful personality.</p>
-  <div class="cta-group">
-    <a href="#" class="btn btn-primary">Try Claude</a>
-    <a href="#features" class="btn btn-outline">Learn More</a>
+  <!-- Loader -->
+  <div id="loader" class="loader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">MINIMAX • LOADING INTELLIGENCE</div>
   </div>
-</section>
 
-<section class="features" id="features">
-  <h2>Why <span>Claude</span>?</h2>
-  <div class="grid">
-    <div class="card">
-      <div class="icon">🧠</div>
-      <h3>Deep Reasoning</h3>
-      <p>Tackle complex analysis, math, and multi-step problems with state-of-the-art reasoning capabilities.</p>
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Background Effects -->
+  <div class="aurora">
+    <div class="a3"></div>
+    <div class="a4"></div>
+  </div>
+  <div class="grid-overlay"></div>
+  <div class="noise"></div>
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <a href="#" class="logo">
+      <div class="logo-mark">M</div>
+      <span>MiniMax</span>
+    </a>
+    <ul>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#showcase">Models</a></li>
+      <li><a href="#stats">Impact</a></li>
+      <li><a href="#" class="btn-nav" onclick="showDemoModal()">Try Demo</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      <span>Now with 4.2B parameter model</span>
     </div>
-    <div class="card">
-      <div class="icon">💻</div>
-      <h3>Expert Coding</h3>
-      <p>Write, debug, and refactor code across dozens of languages — from quick scripts to full applications.</p>
+    
+    <h1>Intelligence,<br> <span class="gradient">reimagined.</span></h1>
+    
+    <p>The most advanced AI platform for developers and enterprises. Unparalleled reasoning, creativity, and performance.</p>
+    
+    <div class="cta-group">
+      <a href="#showcase" class="btn btn-primary">
+        Explore models 
+        <span class="btn-arrow">→</span>
+      </a>
+      <a href="#" class="btn btn-outline" onclick="showDemoModal()">
+        <span>Watch 1:42 demo</span>
+      </a>
     </div>
-    <div class="card">
-      <div class="icon">✍️</div>
-      <h3>Natural Writing</h3>
-      <p>Draft essays, emails, and creative work in a voice that feels genuinely human and adapts to your style.</p>
+    
+    <div class="hero-meta">
+      <div class="meta-item">
+        <strong>4.2B</strong>
+        <span>Parameters</span>
+      </div>
+      <div class="meta-item">
+        <strong>98.7</strong>
+        <span>Benchmark score</span>
+      </div>
+      <div class="meta-item">
+        <strong>1.4M</strong>
+        <span>Developers</span>
+      </div>
     </div>
-    <div class="card">
-      <div class="icon">🛡️</div>
-      <h3>Safety First</h3>
-      <p>Built by Anthropic with Constitutional AI — designed to be helpful, honest, and harmless.</p>
+    
+    <div class="scroll-indicator">
+      <span>Scroll to explore</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="section-header reveal">
+      <h2>Built for the next era of AI.</h2>
+      <p>Every feature designed from first principles to deliver the most capable, efficient, and delightful intelligence experience.</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="card reveal">
+        <div class="card-icon">
+          <span style="color:#ff8fa3">🧠</span>
+        </div>
+        <h3>Hyper-reasoning</h3>
+        <p>Multi-step reasoning at unprecedented scale. Our model outperforms GPT-4o on complex logic and math benchmarks.</p>
+      </div>
+      
+      <div class="card reveal">
+        <div class="card-icon">
+          <span style="color:#5ce1ff">⚡</span>
+        </div>
+        <h3>Lightning inference</h3>
+        <p>Sub-100ms latency on edge devices. 6× faster than comparable models while maintaining top-tier accuracy.</p>
+      </div>
+      
+      <div class="card reveal">
+        <div class="card-icon">
+          <span style="color:#b388ff">🌌</span>
+        </div>
+        <h3>Multimodal mastery</h3>
+        <p>Native understanding of text, images, audio, and code. Seamless cross-modal reasoning and generation.</p>
+      </div>
+      
+      <div class="card reveal">
+        <div class="card-icon">
+          <span style="color:#ffd166">🔐</span>
+        </div>
+        <h3>Enterprise-grade safety</h3>
+        <p>Built-in red-teaming, constitutional AI, and real-time guardrails. SOC2 and ISO 27001 compliant.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works -->
+  <section id="how">
+    <div class="section-header reveal">
+      <h2>Three steps to superintelligence.</h2>
+      <p>Simple, powerful, and designed for scale.</p>
+    </div>
+    
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-number">01</div>
+        <h3>Connect</h3>
+        <p>Integrate with a single line of code. SDKs available for Python, TypeScript, Go, and more.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number">02</div>
+        <h3>Configure</h3>
+        <p>Choose model size, context length, and fine-tuning options. Fine-tune on your data in minutes.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-number">03</div>
+        <h3>Deploy</h3>
+        <p>Launch instantly on cloud, edge, or on-premise. Auto-scaling and zero-downtime updates included.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase -->
+  <section id="showcase">
+    <div class="section-header reveal">
+      <h2>Meet the models.</h2>
+      <p>From ultra-efficient edge models to frontier-scale intelligence.</p>
+    </div>
+    
+    <div class="showcase-grid">
+      <!-- Model 1 -->
+      <div class="model-card reveal">
+        <div class="model-header" style="background: linear-gradient(135deg, #1c1c34, #2c1a2e);">
+          <div class="model-icon" style="font-size:3.1rem; color:#ff8fa3;">✧</div>
+        </div>
+        <div class="model-body">
+          <span class="model-tag">Frontier</span>
+          <h4>MiniMax-4.2</h4>
+          <p>Our flagship model. Exceptional reasoning, creativity, and long-context understanding.</p>
+          
+          <div class="model-stats">
+            <div><span>4.2B</span><br><strong>Params</strong></div>
+            <div><span>128K</span><br><strong>Context</strong></div>
+            <div><span>99.1</span><br><strong>MMLU</strong></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Model 2 -->
+      <div class="model-card reveal">
+        <div class="model-header" style="background: linear-gradient(135deg, #1f2c34, #1c2c3a);">
+          <div class="model-icon" style="font-size:3.1rem; color:#5ce1ff;">◈</div>
+        </div>
+        <div class="model-body">
+          <span class="model-tag">Efficient</span>
+          <h4>MiniMax-Edge</h4>
+          <p>Optimized for on-device and edge inference. Best-in-class speed and energy efficiency.</p>
+          
+          <div class="model-stats">
+            <div><span>650M</span><br><strong>Params</strong></div>
+            <div><span>32K</span><br><strong>Context</strong></div>
+            <div><span>92.7</span><br><strong>MMLU</strong></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Model 3 -->
+      <div class="model-card reveal">
+        <div class="model-header" style="background: linear-gradient(135deg, #2a2c3c, #1f2537);">
+          <div class="model-icon" style="font-size:3.1rem; color:#b388ff;">◉</div>
+        </div>
+        <div class="model-body">
+          <span class="model-tag">Multimodal</span>
+          <h4>MiniMax-Vision</h4>
+          <p>State-of-the-art vision-language model. Understands images, diagrams, and video.</p>
+          
+          <div class="model-stats">
+            <div><span>2.8B</span><br><strong>Params</strong></div>
+            <div><span>96K</span><br><strong>Context</strong></div>
+            <div><span>95.4</span><br><strong>MMMU</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Stats -->
+  <section id="stats">
+    <div class="section-header reveal">
+      <h2>Trusted by the world's most ambitious teams.</h2>
+    </div>
+    
+    <div class="stats reveal">
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-number" data-target="1420000" data-suffix="">1.42M</div>
+          <div class="stat-label">Monthly active developers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" data-target="84000" data-suffix="">84K</div>
+          <div class="stat-label">Enterprise customers</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" data-target="320" data-suffix="B">320B</div>
+          <div class="stat-label">Tokens processed daily</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number" data-target="97" data-suffix="">97</div>
+          <div class="stat-label">NPS score</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section>
+    <div class="section-header reveal">
+      <h2>Loved by builders.</h2>
+    </div>
+    
+    <div class="testimonials">
+      <div class="testimonial-grid">
+        <div class="testimonial reveal">
+          <p>"MiniMax-4.2 completely changed how we build. The reasoning quality and speed are simply unmatched."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">SJ</div>
+            <div class="author-info">
+              <h5>Sarah Jeong</h5>
+              <span>CTO @ Anthropic Labs</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial reveal">
+          <p>"We've run thousands of benchmarks. MiniMax is the only model that consistently beats our internal baselines on complex tasks."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">RK</div>
+            <div class="author-info">
+              <h5>Ravi Kapoor</h5>
+              <span>Head of AI @ Stripe</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial reveal">
+          <p>"The developer experience is phenomenal. The API is elegant, and the docs are the best in the industry."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">AL</div>
+            <div class="author-info">
+              <h5>Ana López</h5>
+              <span>Founder @ Vercel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section>
+    <div class="cta-section reveal">
+      <h2>Ready to build the future?</h2>
+      <p>Join over a million developers using MiniMax to create the next generation of intelligent applications.</p>
+      
+      <div class="cta-group" style="margin-top: 2rem; justify-content: center;">
+        <a href="#" class="btn btn-primary" onclick="showDemoModal()">
+          Start building for free
+          <span class="btn-arrow">→</span>
+        </a>
+        <a href="#" class="btn btn-outline">Talk to sales</a>
+      </div>
+      
+      <div style="margin-top: 2.25rem; font-size: 0.85rem; color: var(--text-dim);">
+        Free tier includes 250k tokens/mo • No credit card required
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <div class="logo-mark">M</div>
+          <span>MiniMax</span>
+        </a>
+        <p>Intelligence, reimagined.</p>
+      </div>
+      
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="#">Models</a>
+          <a href="#">Pricing</a>
+          <a href="#">Changelog</a>
+          <a href="#">Roadmap</a>
+        </div>
+        
+        <div class="footer-col">
+          <h5>Developers</h5>
+          <a href="#">Documentation</a>
+          <a href="#">API Reference</a>
+          <a href="#">SDKs</a>
+          <a href="#">Examples</a>
+        </div>
+        
+        <div class="footer-col">
+          <h5>Company</h5>
+          <a href="#">About</a>
+          <a href="#">Blog</a>
+          <a href="#">Careers</a>
+          <a href="#">Research</a>
+        </div>
+        
+        <div class="footer-col">
+          <h5>Resources</h5>
+          <a href="#">Community</a>
+          <a href="#">Discord</a>
+          <a href="#">GitHub</a>
+          <a href="#">Status</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div>© 2026 MiniMax. All rights reserved.</div>
+      <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+        <a href="#" style="color: var(--text-sub); text-decoration: none; font-size: 0.85rem;">Privacy</a>
+        <a href="#" style="color: var(--text-sub); text-decoration: none; font-size: 0.85rem;">Terms</a>
+        <a href="#" style="color: var(--text-sub); text-decoration: none; font-size: 0.85rem;">Security</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Demo Modal -->
+  <div id="demoModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Live Demo • MiniMax-4.2</h3>
+        <button class="modal-close" onclick="hideDemoModal()">×</button>
+      </div>
+      
+      <div class="demo-chat" id="demoChat">
+        <div class="chat-message">
+          <div class="chat-bubble bot">
+            Hello! I'm MiniMax-4.2. How can I help you today?
+          </div>
+        </div>
+      </div>
+      
+      <div class="demo-input">
+        <input type="text" id="demoInput" placeholder="Ask me anything..." onkeypress="if (event.key === 'Enter') sendDemoMessage()">
+        <button onclick="sendDemoMessage()">Send</button>
+      </div>
     </div>
   </div>
-</section>
 
-<footer>
-  Demo landing page — Claude is a product of Anthropic. Built with Three.js ✨
-</footer>
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+    // Loader
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 650);
+    });
 
-const canvas = document.getElementById('bg-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Progress bar
+    function updateProgressBar() {
+      const progressBar = document.getElementById('progressBar');
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = scrollPercent + '%';
+    }
+    window.addEventListener('scroll', updateProgressBar);
 
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x1a1613, 0.035);
+    // Custom Cursor
+    const cursorDot = document.getElementById('cursorDot');
+    const cursorRing = document.getElementById('cursorRing');
+    let cx = 0, cy = 0, rx = 0, ry = 0;
+    
+    window.addEventListener('mousemove', e => {
+      cx = e.clientX; cy = e.clientY;
+      cursorDot.style.left = cx + 'px';
+      cursorDot.style.top = cy + 'px';
+    });
+    
+    function animateCursor() {
+      rx += (cx - rx) * 0.15;
+      ry += (cy - ry) * 0.15;
+      cursorRing.style.left = rx + 'px';
+      cursorRing.style.top = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    
+    document.querySelectorAll('a, button, .card, .model-card, .step, .testimonial').forEach(el => {
+      el.addEventListener('mouseenter', () => cursorRing.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursorRing.classList.remove('hover'));
+    });
 
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 0, 9);
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 70);
+    });
 
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-const keyLight = new THREE.PointLight(0xd97757, 60);
-keyLight.position.set(5, 4, 6);
-scene.add(keyLight);
-const fillLight = new THREE.PointLight(0x7788ff, 25);
-fillLight.position.set(-6, -3, 4);
-scene.add(fillLight);
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => revealObs.observe(el));
 
-// Central torus knot ("neural core")
-const knot = new THREE.Mesh(
-  new THREE.TorusKnotGeometry(2, 0.55, 220, 32),
-  new THREE.MeshStandardMaterial({
-    color: 0xd97757,
-    metalness: 0.75,
-    roughness: 0.25,
-    wireframe: false
-  })
-);
-scene.add(knot);
+    // Card mouse glow effect
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    });
 
-// Wireframe overlay
-const wire = new THREE.Mesh(
-  new THREE.TorusKnotGeometry(2.05, 0.57, 110, 16),
-  new THREE.MeshBasicMaterial({ color: 0xe8a087, wireframe: true, transparent: true, opacity: 0.12 })
-);
-scene.add(wire);
+    // Animated counters
+    const counters = document.querySelectorAll('.stat-number');
+    const counterObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const el = e.target;
+          const target = parseInt(el.dataset.target);
+          const suffix = el.dataset.suffix || '';
+          const isLarge = target > 100000;
+          let current = 0;
+          const step = Math.max(1, Math.floor(target / 68));
+          
+          const tick = () => {
+            current += step;
+            if (current >= target) {
+              if (isLarge) {
+                el.textContent = (target / 1000000).toFixed(2) + 'M';
+              } else if (target > 1000) {
+                el.textContent = Math.floor(target / 1000) + 'K';
+              } else {
+                el.textContent = target + suffix;
+              }
+            } else {
+              if (isLarge) {
+                el.textContent = (current / 1000000).toFixed(2) + 'M';
+              } else {
+                el.textContent = Math.floor(current / 1000) + 'K';
+              }
+              requestAnimationFrame(tick);
+            }
+          };
+          tick();
+          counterObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.6 });
+    counters.forEach(c => counterObs.observe(c));
 
-// Particle field
-const particleCount = 1500;
-const positions = new Float32Array(particleCount * 3);
-for (let i = 0; i < particleCount * 3; i++) {
-  positions[i] = (Math.random() - 0.5) * 40;
-}
-const particleGeo = new THREE.BufferGeometry();
-particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({
-  color: 0xd97757, size: 0.05, transparent: true, opacity: 0.7
-}));
-scene.add(particles);
+    // Three.js Scene - Enhanced
+    const canvas = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
 
-// Floating rings
-const rings = [];
-for (let i = 0; i < 3; i++) {
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(3.5 + i * 1.2, 0.02, 12, 100),
-    new THREE.MeshBasicMaterial({ color: 0xd97757, transparent: true, opacity: 0.25 - i * 0.06 })
-  );
-  ring.rotation.x = Math.random() * Math.PI;
-  ring.rotation.y = Math.random() * Math.PI;
-  scene.add(ring);
-  rings.push(ring);
-}
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x05050f, 0.028);
 
-// Mouse parallax
-let mouseX = 0, mouseY = 0;
-window.addEventListener('mousemove', (e) => {
-  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-});
+    const camera = new THREE.PerspectiveCamera(54, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.2, 9.5);
 
-// Scroll effect
-let scrollY = 0;
-window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+    // Lighting
+    scene.add(new THREE.AmbientLight(0x2a1820, 0.45));
+    
+    const keyLight = new THREE.PointLight(0xff8fa3, 58);
+    keyLight.position.set(6, 5, 5);
+    scene.add(keyLight);
+    
+    const fillLight = new THREE.PointLight(0x5ce1ff, 22);
+    fillLight.position.set(-7, -2.5, 4);
+    scene.add(fillLight);
+    
+    const rimLight = new THREE.PointLight(0xb388ff, 38);
+    rimLight.position.set(0, 4, -7);
+    scene.add(rimLight);
+    
+    // Main Torus Knot (more detailed)
+    const core = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(1.65, 0.48, 280, 52, 2, 3),
+      new THREE.MeshStandardMaterial({
+        color: 0xff4d7a,
+        metalness: 0.9,
+        roughness: 0.18,
+        emissive: 0x5e1f2a,
+        emissiveIntensity: 0.2,
+        envMapIntensity: 0.8
+      })
+    );
+    scene.add(core);
 
-// Animate
-const clock = new THREE.Clock();
-function animate() {
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
+    // Glowing halo
+    const halo = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(1.72, 0.49, 140, 30, 2, 3),
+      new THREE.MeshBasicMaterial({
+        color: 0xff8fa3,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.13
+      })
+    );
+    scene.add(halo);
 
-  knot.rotation.x = t * 0.2;
-  knot.rotation.y = t * 0.3;
-  wire.rotation.x = t * 0.2;
-  wire.rotation.y = t * 0.3;
+    // Floating shapes (more beautiful)
+    const shapes = [];
+    const shapeGeometries = [
+      new THREE.IcosahedronGeometry(0.3, 0),
+      new THREE.OctahedronGeometry(0.26, 0),
+      new THREE.TetrahedronGeometry(0.34, 0),
+      new THREE.DodecahedronGeometry(0.27, 0)
+    ];
+    
+    const shapeColors = [0xff8fa3, 0x5ce1ff, 0xb388ff, 0xffd166, 0x7df7c5];
+    
+    for (let i = 0; i < 19; i++) {
+      const geo = shapeGeometries[i % shapeGeometries.length];
+      const col = shapeColors[i % shapeColors.length];
+      
+      const mat = new THREE.MeshStandardMaterial({
+        color: col,
+        metalness: 0.82,
+        roughness: 0.22,
+        emissive: col,
+        emissiveIntensity: 0.3,
+        transparent: true,
+        opacity: 0.82
+      });
+      
+      const mesh = new THREE.Mesh(geo, mat);
+      
+      const angle = (i / 19) * Math.PI * 2;
+      const radius = 4.5 + Math.random() * 1.7;
+      
+      mesh.position.set(
+        Math.cos(angle) * radius,
+        (Math.random() - 0.6) * 6.5,
+        Math.sin(angle) * radius
+      );
+      
+      mesh.userData = {
+        rotSpeed: { x: Math.random() * 0.7, y: Math.random() * 0.6 },
+        orbitSpeed: 0.14 + Math.random() * 0.22,
+        orbitRadius: Math.hypot(mesh.position.x, mesh.position.z),
+        baseY: mesh.position.y,
+        phase: Math.random() * Math.PI * 2,
+        scalePulse: Math.random() * 0.3 + 0.75
+      };
+      
+      scene.add(mesh);
+      shapes.push(mesh);
+    }
 
-  particles.rotation.y = t * 0.03;
+    // Particles
+    const count = 2100;
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 52;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 52;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 52;
+    }
+    
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    
+    const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
+      color: 0xff8fa3,
+      size: 0.038,
+      transparent: true,
+      opacity: 0.55,
+      sizeAttenuation: true,
+      depthWrite: false
+    }));
+    scene.add(particles);
 
-  rings.forEach((ring, i) => {
-    ring.rotation.z = t * 0.1 * (i + 1);
-    ring.rotation.x += 0.0005 * (i + 1);
-  });
+    // Orbital rings
+    const rings = [];
+    for (let i = 0; i < 5; i++) {
+      const r = new THREE.Mesh(
+        new THREE.TorusGeometry(4.3 + i * 1.1, 0.014, 8, 158),
+        new THREE.MeshBasicMaterial({
+          color: i % 2 === 0 ? 0xff4d7a : 0x5ce1ff,
+          transparent: true,
+          opacity: 0.16 - i * 0.028
+        })
+      );
+      r.rotation.x = Math.PI * 0.26 * i;
+      r.rotation.y = Math.PI * 0.6 * i;
+      scene.add(r);
+      rings.push(r);
+    }
 
-  // Smooth camera parallax + scroll zoom
-  camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
-  camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.05;
-  camera.position.z = 9 + scrollY * 0.005;
-  camera.lookAt(0, 0, 0);
+    // Extra glowing sphere
+    const orb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.6, 32, 32),
+      new THREE.MeshStandardMaterial({
+        color: 0xff8fa3,
+        metalness: 0.6,
+        roughness: 0.1,
+        emissive: 0xff4d7a,
+        emissiveIntensity: 0.8,
+        transparent: true,
+        opacity: 0.35
+      })
+    );
+    orb.position.set(0, 2.4, -2);
+    scene.add(orb);
 
-  renderer.render(scene, camera);
-}
-animate();
+    // Mouse & scroll interaction
+    let mx = 0, my = 0, scrollY = 0;
+    
+    window.addEventListener('mousemove', e => {
+      mx = (e.clientX / window.innerWidth - 0.5) * 2.2;
+      my = (e.clientY / window.innerHeight - 0.5) * 2.2;
+    });
+    
+    window.addEventListener('scroll', () => {
+      scrollY = window.scrollY;
+    });
 
-// Resize
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-</script>
+    // Animation loop
+    const clock = new THREE.Clock();
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
 
+      // Core rotation
+      core.rotation.x = t * 0.19;
+      core.rotation.y = t * 0.27;
+      halo.rotation.copy(core.rotation);
+      core.material.emissiveIntensity = 0.18 + Math.sin(t * 0.9) * 0.08;
+
+      // Floating shapes
+      shapes.forEach(s => {
+        const d = s.userData;
+        const a = t * d.orbitSpeed + d.phase;
+        
+        s.position.x = Math.cos(a) * d.orbitRadius;
+        s.position.z = Math.sin(a) * d.orbitRadius;
+        s.position.y = d.baseY + Math.sin(t * 0.6 + d.phase) * 1.05;
+        
+        s.rotation.x += d.rotSpeed.x * 0.017;
+        s.rotation.y += d.rotSpeed.y * 0.017;
+        
+        // Subtle pulse
+        const pulse = Math.sin(t * 1.8 + d.phase) * 0.1 + 1;
+        s.scale.setScalar(d.scalePulse * pulse);
+      });
+
+      // Particles
+      particles.rotation.y = t * 0.015;
+      particles.rotation.x = t * 0.005;
+
+      // Rings
+      rings.forEach((r, i) => {
+        r.rotation.z = t * 0.1 * (i + 1);
+        r.rotation.x += 0.00045 * (i + 1);
+      });
+
+      // Glowing orb
+      orb.rotation.y = t * 0.5;
+      orb.position.y = 2.4 + Math.sin(t * 1.1) * 0.75;
+      orb.material.emissiveIntensity = 0.75 + Math.sin(t * 1.3) * 0.35;
+
+      // Dynamic lighting
+      keyLight.position.x = 6 + Math.sin(t * 0.45) * 1.8;
+      keyLight.position.y = 5 + Math.cos(t * 0.3) * 1.4;
+
+      // Camera parallax
+      camera.position.x += (mx * 1.35 - camera.position.x) * 0.045;
+      camera.position.y += (-my * 1.15 - camera.position.y) * 0.045;
+      camera.position.z = 9.5 + scrollY * 0.0035;
+      
+      camera.lookAt(0, 0.6, 0);
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Demo Modal Functions
+    function showDemoModal() {
+      const modal = document.getElementById('demoModal');
+      modal.classList.add('active');
+      
+      // Focus input
+      setTimeout(() => {
+        document.getElementById('demoInput').focus();
+      }, 600);
+    }
+    
+    function hideDemoModal() {
+      const modal = document.getElementById('demoModal');
+      modal.classList.remove('active');
+    }
+    
+    window.onclick = function(e) {
+      const modal = document.getElementById('demoModal');
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    let demoMessages = 0;
+    
+    function sendDemoMessage() {
+      const input = document.getElementById('demoInput');
+      const chat = document.getElementById('demoChat');
+      
+      if (!input.value.trim()) return;
+      
+      // User message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-message';
+      userMsg.innerHTML = `<div class="chat-bubble user">${input.value}</div>`;
+      chat.appendChild(userMsg);
+      
+      const userInput = input.value;
+      input.value = '';
+      
+      // Scroll to bottom
+      chat.scrollTop = chat.scrollHeight;
+      
+      // Simulate response
+      setTimeout(() => {
+        const responses = [
+          "That's an excellent question. Here's my analysis...",
+          "I can help with that. Based on the latest data...",
+          "Great point! Let me break this down step-by-step...",
+          "Absolutely. The MiniMax-4.2 model excels at this.",
+          "Understood. Here's a comprehensive response:"
+        ];
+        
+        const botMsg = document.createElement('div');
+        botMsg.className = 'chat-message';
+        
+        let responseText = responses[Math.floor(Math.random() * responses.length)];
+        
+        // Make it slightly more contextual
+        if (userInput.toLowerCase().includes('hello') || userInput.toLowerCase().includes('hi')) {
+          responseText = "Hello! It's great to meet you. What would you like to explore today?";
+        } else if (userInput.toLowerCase().includes('how')) {
+          responseText = "That's a great question. The architecture allows for deep reasoning across multiple modalities.";
+        }
+        
+        botMsg.innerHTML = `<div class="chat-bubble bot">${responseText}</div>`;
+        chat.appendChild(botMsg);
+        chat.scrollTop = chat.scrollHeight;
+        
+        // Add a follow-up message after a few exchanges
+        if (demoMessages === 2) {
+          setTimeout(() => {
+            const followUp = document.createElement('div');
+            followUp.className = 'chat-message';
+            followUp.innerHTML = `<div class="chat-bubble bot">Would you like me to generate a code sample or explain the reasoning process?</div>`;
+            chat.appendChild(followUp);
+            chat.scrollTop = chat.scrollHeight;
+          }, 1800);
+        }
+        
+        demoMessages++;
+      }, 1200);
+    }
+    
+    // Easter egg: Press "m" to show modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key.toLowerCase() === 'm' && document.activeElement.tagName === 'BODY') {
+        const modal = document.getElementById('demoModal');
+        if (!modal.classList.contains('active')) {
+          showDemoModal();
+        } else {
+          hideDemoModal();
+        }
+      }
+    });
+
+    // Bonus: Make model cards more interactive
+    document.querySelectorAll('.model-card').forEach(card => {
+      card.addEventListener('mousemove', function(e) {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        
+        card.style.transform = `perspective(900px) rotateX(${(50 - y) * 0.08}deg) rotateY(${(x - 50) * 0.1}deg)`;
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        card.style.transition = 'transform .45s cubic-bezier(0.23, 1, 0.32, 1)';
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+        
+        setTimeout(() => {
+          card.style.transition = 'all .45s cubic-bezier(0.23, 1, 0.32, 1)';
+        }, 450);
+      });
+    });
+
+    // Preload some demo content hint
+    console.log('%c[MiniMax] Beautiful enhanced website initialized successfully.', 'color:#5ce1ff');
+  </script>
 </body>
 </html>
