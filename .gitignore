@@ -1,0 +1,12 @@
+```
+# Backup files
+*_backup.*
+
+# Temporary and swap files
+*.tmp
+*.swp
+*.swo
+
+# Logs
+*.log
+```
